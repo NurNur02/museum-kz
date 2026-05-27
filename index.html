@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Национальный музей Казахстана</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #DCD6CD; /* фон вокруг карточки */
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+            line-height: 1.4;
+        }
+
+        /* контейнер как React-приложение (max-width 480px) */
+        .app-root {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #F2EFE9;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER (стики) ===== */
+        .museum-header {
+            background: #1C1A17;
+            padding: 13px 14px 11px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.13);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .header-texts {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            color: #F0EAE0;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1.1px;
+        }
+
+        .header-sub {
+            color: rgba(240,234,224,0.5);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* страница-контент */
+        .page-content {
+            padding: 12px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            flex: 1;
+        }
+
+        .intro-text {
+            color: #6B6560;
+            font-size: 12px;
+            margin: 0 0 4px 2px;
+            letter-spacing: 0.3px;
+        }
+
+        /* секции на главной */
+        .section-row {
+            background: #fff;
+            border: 1px solid #DDD8CF;
+            border-radius: 12px;
+            padding: 13px 11px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            text-align: left;
+            width: 100%;
+            transition: all 0.15s;
+        }
+
+        .section-row:active {
+            background: #fefaf5;
+            transform: scale(0.99);
+        }
+
+        .section-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            background: #F5EDE4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .section-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-label {
+            color: #1A1A1A;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .section-range {
+            color: #6B6560;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .section-count {
+            color: #8B4513;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
+        .chevron {
+            color: #8B4513;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        /* элемент списка экспонатов */
+        .exhibit-row {
+            background: #fff;
+            border: 1px solid #DDD8CF;
+            border-radius: 11px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            transition: background 0.1s;
+        }
+
+        .exhibit-row:active {
+            background: #fefaf5;
+        }
+
+        .exhibit-img {
+            width: 68px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+            background: #ede7df;
+        }
+
+        .exhibit-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exhibit-code {
+            color: #8B4513;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .exhibit-name {
+            color: #1A1A1A;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+
+        .exhibit-meta {
+            color: #6B6560;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        /* детальная карточка */
+        .detail-card {
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #DDD8CF;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+        }
+
+        .detail-top {
+            display: flex;
+            gap: 0;
+        }
+
+        .detail-img {
+            width: 42%;
+            min-height: 160px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #ede7df;
+            display: block;
+        }
+
+        .detail-meta {
+            flex: 1;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .detail-code {
+            color: #8B4513;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+        }
+
+        .detail-name {
+            color: #1A1A1A;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.35;
+        }
+
+        .detail-period {
+            color: #6B6560;
+            font-size: 11px;
+        }
+
+        .detail-location {
+            color: #6B6560;
+            font-size: 11px;
+        }
+
+        .detail-divider {
+            height: 1px;
+            background: #DDD8CF;
+        }
+
+        .detail-desc {
+            color: #3A3530;
+            font-size: 13px;
+            line-height: 1.75;
+            margin: 0;
+            padding: 14px 14px 0;
+        }
+
+        .learn-more {
+            display: block;
+            background: #1C1A17;
+            color: #F0EAE0;
+            padding: 12px 0;
+            margin: 14px 14px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        .learn-more:hover {
+            background: #3a2e28;
+        }
+
+        button {
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* пустой/плейсхолдер */
+        .fallback-img {
+            background: #e8e0d4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-root" id="museumApp">
+    <!-- динамический рендер через JS -->
+</div>
+
+<script>
+    // ------------------------------------------------------------------
+    // 1. ДАННЫЕ (полностью скопированы из React-версии)
+    // ------------------------------------------------------------------
+    const PH = "https://placehold.co/120x120/e8e0d4/8B4513?text=🏺";
+
+    const sections = [
+        { id: "stone",    label: "Каменный век",        icon: "🪨", range: "2 млн – 3 000 до н.э." },
+        { id: "bronze",   label: "Бронзовый век",        icon: "⚱️", range: "3 000 – 800 до н.э." },
+        { id: "saka",     label: "Сакская эпоха",        icon: "🏹", range: "VIII – III вв. до н.э." },
+        { id: "hunnu",    label: "Эпоха хунну и тюрков", icon: "🐎", range: "III в. до н.э. – VIII в. н.э." },
+        { id: "medieval", label: "Средневековье",         icon: "🕌", range: "IX – XV вв." },
+        { id: "kazakh",   label: "Казахское ханство",     icon: "🌙", range: "XV – XIX вв." },
+    ];
+
+    const exhibits = {
+        stone: [
+            { id:1,  code:"КВ-01", name:"Ручное рубило из Южного Казахстана",            period:"800 000 до н.э.", loc:"Туркестанская обл.",  img:"https://i.pinimg.com/736x/a0/28/01/a0280133d14ff84625b24045d4c40230.jpg", desc:"Двусторонне обработанное кремнёвое орудие ашельской культуры. Найдено у с. Борыказган. Свидетельствует о раннем заселении территории Казахстана Homo erectus." },
+    { id:2,  code:"КВ-02", name:"Пещерная живопись Тамгалы-Тас",                 period:"4 000 до н.э.",   loc:"Алматинская обл.",   img:"https://i.pinimg.com/1200x/45/52/b9/4552b9f0c767769d19bc7afd03119825.jpg", desc:"Петроглифы на скалах ущелья Тамгалы — более 5 000 изображений. Включены в список Всемирного наследия ЮНЕСКО в 2004 году." },
+    { id:3,  code:"КВ-03", name:"Кремнёвый скребок стоянки Батпак",              period:"100 000 до н.э.", loc:"Карагандинская обл.", img:"https://i.pinimg.com/736x/f0/b9/1f/f0b91fae37ef56c9095e2dbeb51bc00e.jpg", desc:"Мустьерская стоянка Батпак. Скребок использовался для обработки шкур. Один из древнейших артефактов Центрального Казахстана." },
+    { id:4,  code:"КВ-04", name:"Каменный нож стоянки Ачисай",                   period:"40 000 до н.э.",  loc:"Туркестанская обл.",  img:"https://i.pinimg.com/736x/61/a8/99/61a899e3bf9622ec50171a2625a83f95.jpg", desc:"Пластина с ретушью эпохи верхнего палеолита. Найдена в многослойной стоянке, фиксирующей переход к Homo sapiens." },
+    { id:5,  code:"КВ-05", name:"Микролиты стоянки Усть-Нарым",                  period:"8 000 до н.э.",   loc:"ВКО",                 img:"https://i.pinimg.com/736x/a1/9e/d4/a19ed41b6ecd6957a8dbdd606fbb9b9e.jpg", desc:"Геометрические кремнёвые вкладыши мезолитического периода. Вставлялись в костяные и деревянные рукояти орудий и оружия." },
+    { id:6,  code:"КВ-06", name:"Зернотёрка стоянки Атасу",                      period:"5 000 до н.э.",   loc:"Карагандинская обл.", img:"https://i.pinimg.com/736x/01/bb/fc/01bbfc0310268708cf0e465c0e4ff32c.jpg", desc:"Гранитная зернотёрка неолита. Свидетельствует о начале собирательства зерновых растений на территории Сарыарки." },
+    { id:7,  code:"КВ-07", name:"Керамический сосуд ботайской культуры",         period:"3 500 до н.э.",   loc:"СКО",                 img:"https://i.pinimg.com/1200x/e8/43/ff/e843ffc99600c783d64881bc9f277f4b.jpg", desc:"Ямочно-гребенчатая керамика Ботая. Именно здесь впервые в мире была одомашнена лошадь около 3 500 до н.э." },
+    { id:8,  code:"КВ-08", name:"Костяной гарпун стоянки Виловатое",             period:"6 000 до н.э.",   loc:"ЗКО",                 img:"https://i.pinimg.com/1200x/d9/01/ef/d901ef1afbf40ada33d5e09b2feda8b9.jpg", desc:"Мезолитический гарпун из трубчатой кости. Использовался для рыбалки на реке Урал. Орнаментирован насечками." },
+    { id:9,  code:"КВ-09", name:"Охровое погребение Шидерты",                    period:"7 000 до н.э.",   loc:"Павлодарская обл.",   img:"https://i.pinimg.com/1200x/b8/82/2b/b8822b0c098f8fe5ca04f648b3b67e61.jpg", desc:"Захоронение мезолитического охотника. Тело посыпано красной охрой — ритуальная практика, связанная с культом жизни." },
+    { id:10, code:"КВ-10", name:"Нуклеус левалуазский Семиречье",                period:"200 000 до н.э.", loc:"Алматинская обл.",   img:"https://avatars.mds.yandex.net/i?id=d06f5752beb5a8362b93c6736af132e5cd99fa49-5244440-images-thumbs&n=13", desc:"Черепаховидный нуклеус среднепалеолитической техники леваллуа. Найден в предгорьях Заилийского Алатау." },
+    { id:11, code:"КВ-11", name:"Кремнёвый наконечник стрелы Усть-Буконь",      period:"3 000 до н.э.",   loc:"ВКО",                 img:"https://i.pinimg.com/1200x/31/e5/08/31e508bbc38a2040a5d9b6db7e134f9c.jpg", desc:"Листовидный наконечник финального неолита. Тщательная двусторонняя ретушь указывает на высокую специализацию мастера." },
+    { id:12, code:"КВ-12", name:"Костяная игла стоянки Карабас",                 period:"25 000 до н.э.",  loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=3b6fb54e5e1531f49d737d4d504c98dc_l-11723847-images-thumbs&n=13", desc:"Игла с ушком из верхнего палеолита. Свидетельствует об умении шить одежду, что критически важно в условиях ледникового климата." },
+    { id:13, code:"КВ-13", name:"Кремнёвый резец Мангышлака",                    period:"12 000 до н.э.",  loc:"Мангистауская обл.",  img:"https://avatars.mds.yandex.net/i?id=0372f2b1fd5323665e5ec6de658b705fc4cb08da-5665039-images-thumbs&n=13", desc:"Угловой резец эпипалеолита. Находки близ Шевченко демонстрируют связь с прикаспийскими культурными традициями." },
+    { id:14, code:"КВ-14", name:"Глиняная фигурка животного (Баланды)",          period:"4 500 до н.э.",   loc:"Кызылординская обл.", img:"https://i.pinimg.com/736x/1a/01/ca/1a01caa9d501323999f9a8eb9b33da3f.jpg", desc:"Зооморфная глиняная фигурка неолита. Предположительно изображает быка. Связана с ранними культами плодородия." },
+    { id:15, code:"КВ-15", name:"Петроглифы Арпаузена",                          period:"6 000 до н.э.",   loc:"Мангистауская обл.",  img:"https://i.pinimg.com/1200x/88/06/4c/88064c53c7656894381f048a8db90e78.jpg", desc:"Неолитические петроглифы с изображениями архаров, лошадей и антропоморфных фигур на плато Устюрт." },
+    { id:16, code:"КВ-16", name:"Каменная наковальня-ретушёр Сузак",             period:"50 000 до н.э.",  loc:"Туркестанская обл.",  img:"https://i.ytimg.com/vi/m2ppXoPpj-g/maxresdefault.jpg", desc:"Кварцитовая наковальня для вторичной обработки кремня. Мустьерская стоянка у предгорий Каратау." },
+    { id:17, code:"КВ-17", name:"Охотничья ловчая яма Тургай",                   period:"10 000 до н.э.",  loc:"Костанайская обл.",   img:"https://www.thedailygardener.com/wp-content/uploads/2021/12/Pit-Trap.jpeg", desc:"Реконструкция системы загонной охоты степного мезолита. Группы ям использовались для охоты на бизонов и лошадей." },
+    { id:18, code:"КВ-18", name:"Кварцитовый чоппер долины Сырдарьи",            period:"1 500 000 до н.э.",loc:"Кызылординская обл.",img:"https://avatars.mds.yandex.net/i?id=b4c513576b84355d18e3c4d839cc4d5ed77c88eb-5585005-images-thumbs&n=13", desc:"Один из древнейших орудий труда на территории Казахстана. Олдувайская традиция обработки камня галечных орудий." },
+    { id:19, code:"КВ-19", name:"Неолитическое украшение из раковин",            period:"5 000 до н.э.",   loc:"СКО",                 img:"https://i.pinimg.com/736x/48/9a/ba/489aba24c24aee8b73e9f742669de3b0.jpg", desc:"Нагрудные подвески из морских раковин Каспия. Свидетельствуют об обменных сетях, охватывавших сотни километров." },
+    { id:20, code:"КВ-20", name:"Рыболовная сеть (отпечаток) стоянки Виловатое", period:"5 500 до н.э.",  loc:"ЗКО",                 img:"https://i.pinimg.com/1200x/50/a4/1b/50a41b913dbe2df8886efcf3e72cbcd2.jpg", desc:"Отпечаток плетёной рыболовной сети в слое глины. Древнейшее свидетельство рыболовства в Западном Казахстане." },
+        ],
+        bronze: [
+            { id:21, code:"БВ-01", name:"Колесница Синташты (реконструкция)",   period:"2 100 до н.э.", loc:"ЗКО",                 img:"https://i.ytimg.com/vi/8b1rLecRhiU/maxresdefault.jpg", desc:"Древнейшая в мире боевая колесница со спицованными колёсами. Синташтинская культура — прообраз индоиранской цивилизации." },
+    { id:22, code:"БВ-02", name:"Бронзовый кинжал андроновской культуры",period:"1 500 до н.э.", loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=ea60dede909512cc552e6f3717566df0_l-5160870-images-thumbs&n=13", desc:"Литой кинжал с перекрестьем и нервюрой на клинке. Характерен для степной металлургии Центрального Казахстана." },
+    { id:23, code:"БВ-03", name:"Керамика андроново (сосуд)",            period:"1 800 до н.э.", loc:"Акмолинская обл.",   img:"https://avatars.mds.yandex.net/i?id=acd31d0db6c379e4788b27f4ae297b26cd5c1c53-7066046-images-thumbs&n=13", desc:"Сосуд с геометрическим орнаментом — свастики, меандры, треугольники. Эталон андроновской культуры Сарыарки." },
+    { id:24, code:"БВ-04", name:"Бронзовое зеркало андроновской жрицы", period:"1 400 до н.э.", loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=fb477c8ab5a2c07c4333c50e75d6a96bc33308fb-8249876-images-thumbs&ref=rim&n=33&w=188&h=250", desc:"Плоское бронзовое зеркало с петелькой. Обнаружено в женском погребении с охрой. Ритуальный предмет жрицы." },
+    { id:25, code:"БВ-05", name:"Золотые серьги Семипалатинского клада", period:"1 200 до н.э.", loc:"ВКО",                 img:"https://i.pinimg.com/736x/14/06/85/140685f8a731e36c700f354b0840ceef.jpg", desc:"Спиральные золотые серьги финальной бронзы. Демонстрируют высокий уровень ювелирного мастерства степных мастеров." },
+    { id:26, code:"БВ-06", name:"Бронзовый серп поселения Атасу",        period:"1 300 до н.э.", loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=9e40fe512b6d1efc87d5a19ea431045e_l-5248842-images-thumbs&n=13", desc:"Вислообушный бронзовый серп с кольцом на рукояти. Свидетельствует о земледелии в зонах пойменных долин." },
+    { id:27, code:"БВ-07", name:"Шахтные орудия рудника Жезказган",      period:"1 500 до н.э.", loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=798135740bc9a6063cfd50b9e1fcc80346f76e0a-5690841-images-thumbs&n=13", desc:"Бронзовые кайла, долота и деревянные вёдра из медного рудника. Жезказган — один из крупнейших рудников древнего мира." },
+    { id:28, code:"БВ-08", name:"Модель повозки (глиняная) Тасмола",     period:"900 до н.э.",   loc:"Павлодарская обл.",   img:"https://avatars.mds.yandex.net/i?id=42db9a5c4a6bf0ffa8190a65a88919c3_l-4747135-images-thumbs&n=13", desc:"Глиняная модель четырёхколёсной повозки. Переходный период от бронзы к раннему железному веку степей." },
+    { id:29, code:"БВ-09", name:"Бронзовый наконечник копья Семиречье",  period:"1 100 до н.э.", loc:"Алматинская обл.",   img:"https://avatars.mds.yandex.net/i?id=57a7832d4abf42c1d7552b34edc7ac3718975141-5281542-images-thumbs&n=13 ", desc:"Листовидный втульчатый наконечник копья. Традиция изготовления восходит к синташтинским прототипам." },
+    { id:30, code:"БВ-10", name:"Погребальный инвентарь могильника Беgazы",period:"1 300 до н.э.",loc:"Карагандинская обл.",img:"https://avatars.mds.yandex.net/i?id=1fc5c15500c6bac93b939eaab76d44013658e8e4-10385932-images-thumbs&n=13", desc:"Комплекс из керамики, бронзовых украшений и костей животных. Бегазы-дандыбаевская культура Сарыарки." },
+    { id:31, code:"БВ-11", name:"Каменная стела могильника Тагискен",    period:"800 до н.э.",   loc:"Кызылординская обл.", img:"https://avatars.mds.yandex.net/i?id=9054465b1b787d2c51816b2a54e9937d73562c0c-5344236-images-thumbs&n=13", desc:"Антропоморфная стела над курганом. Изображает усопшего воина. Дельта Сырдарьи — зона перехода к сакской культуре." },
+    { id:32, code:"БВ-12", name:"Бронзовый котёл Дандыбай",              period:"1 200 до н.э.", loc:"Карагандинская обл.", img:"https://avatars.mds.yandex.net/i?id=608c01cb1ac294162265ac8fb9704f33cfceb477-6428252-images-thumbs&n=13", desc:"Массивный котёл с двумя ручками. Использовался в ритуальных пирах. Найден в кургане с конской упряжью." },
+    { id:33, code:"БВ-13", name:"Каменная форма для отливки топора",      period:"1 600 до н.э.", loc:"СКО",                 img:"https://avatars.mds.yandex.net/i?id=87a08ac755d06031398a2fb8b3095189238fec84-16492692-images-thumbs&n=13", desc:"Двустворчатая форма из песчаника. Свидетельство производственной деятельности металлургов эпохи бронзы." },
+    { id:34, code:"БВ-14", name:"Бронзовые шило и проколки Нурmanbet",   period:"1 400 до н.э.", loc:"Акмолинская обл.",   img:"https://avatars.mds.yandex.net/i?id=66779d10349fe016cab784b8bb44817fb6524c34-12640276-images-thumbs&n=13", desc:"Набор шорных инструментов из погребения кожевника. Указывает на ремесленную специализацию в бронзовом веке." },
+    { id:35, code:"БВ-15", name:"Глиняная маска из погребения Алексеевка",period:"1 000 до н.э.", loc:"Костанайская обл.",  img:"https://avatars.mds.yandex.net/i?id=e0d40e14b9bcb082fd5a8cc0a7da824e66c1685a-4865933-images-thumbs&n=13", desc:"Погребальная маска из обожжённой глины. Уникальная находка, отражающая представления об облике умершего." },
+    { id:36, code:"БВ-16", name:"Бронзовые удила и псалии",              period:"1 700 до н.э.", loc:"ЗКО",                 img:"https://avatars.mds.yandex.net/i?id=09293597b2402f5662fbfb4221343d7b_sr-9674922-images-thumbs&n=13", desc:"Древнейшие металлические удила с псалиями. Синташтинский тип — революция в управлении конём на колеснице." },
+    { id:37, code:"БВ-17", name:"Кремнёвые вкладыши серпа Петровка",     period:"1 800 до н.э.", loc:"Костанайская обл.",  img:"https://avatars.mds.yandex.net/i?id=383e3b6a8ed85cdfd87505ecd948e397_l-4828628-images-thumbs&n=13", desc:"Вкладыши из кремня, вставлявшиеся в костяную рукоять жатвенного ножа. Свидетельство земледелия петровской культуры." },
+    { id:38, code:"БВ-18", name:"Золотые бляшки Тасмолинского кургана",  period:"700 до н.э.",   loc:"Павлодарская обл.",   img:"https://i.pinimg.com/1200x/a0/ec/72/a0ec72c2284dff27239335ac2f07269a.jpg", desc:"Зооморфные нашивные бляшки в «зверином стиле». Переходный период к сакской культуре — олени, кабаны, хищники." },
+    { id:39, code:"БВ-19", name:"Бронзовый кельт-топор Восточного Казахстана",period:"900 до н.э.",loc:"ВКО",              img:"https://i.pinimg.com/736x/69/b4/89/69b489d607147b311ed370206fa99e1c.jpg", desc:"Втульчатый кельт карасукского типа с орнаментом. Свидетельство тесных связей с культурами Южной Сибири." },
+    { id:40, code:"БВ-20", name:"Погребальная повозка могильника Синташта",period:"2 000 до н.э.",loc:"ЗКО",               img:"https://avatars.mds.yandex.net/i?id=d75b33825dd19317452c7fa20e1dde4ce005e26d-13015897-images-thumbs&n=13", desc:"Деревянная повозка на четырёх колёсах. Захоронена вместе с лошадьми. Символ власти и военного могущества вождя." },
+        ],
+        saka: [
+            { id:41, code:"СК-01", name:"Золотой человек Иссыкского кургана",           period:"IV–III вв. до н.э.", loc:"Алматинская обл.", img:"https://i.pinimg.com/736x/ac/62/a1/ac62a114fc5e2bb4bf978d46a2be88ae.jpg", desc:"4 000 золотых изделий на парадном костюме сакского воина. Главный символ Казахстана. Хранится в Национальном музее РК." },
+    { id:42, code:"СК-02", name:"Золотой олень из кургана Есик",                period:"IV в. до н.э.",      loc:"Алматинская обл.", img:"https://i.pinimg.com/736x/94/14/9e/94149ecabb7143b25b256c085944b19d.jpg", desc:"Накладное украшение в виде летящего оленя. Классический «звериный стиль» саков. Символизирует связь земли и неба." },
+    { id:43, code:"СК-03", name:"Акинак (сакский меч)",                         period:"VI в. до н.э.",      loc:"Семиречье",        img:"https://i.pinimg.com/1200x/e9/46/39/e946394030a47d9cc0f3a8ba173bdf05.jpg", desc:"Короткий железный меч с почковидным перекрестьем и брусковидным навершием. Оружие сакских конных воинов." },
+    { id:44, code:"СК-04", name:"Золотые нашивки конского убора (Бесшатыр)",    period:"V в. до н.э.",       loc:"Алматинская обл.", img:"https://i.pinimg.com/1200x/23/f2/b1/23f2b134f777f182ab574ab47a81a7ba.jpg", desc:"Парадное украшение коня царского кургана Бесшатыр. Зооморфный стиль — грифоны, кони, хищники." },
+    { id:45, code:"СК-05", name:"Бронзовый котёл саков (Семиречье)",            period:"VII в. до н.э.",     loc:"Алматинская обл.", img:"https://i.pinimg.com/736x/5a/cb/bc/5acbbcf582759df30dfbfec42e607ff3.jpg", desc:"Ритуальный котёл на конических ногах. Использовался в жертвоприношениях. Аналогичен скифским котлам Причерноморья." },
+    { id:46, code:"СК-06", name:"Каменные бабы — балбалы",                      period:"VI–IV вв. до н.э.",  loc:"Карагандинская обл.",img:"https://i.pinimg.com/1200x/ce/63/30/ce6330dc69329f827e273534c0c5e41c.jpg",desc:"Каменные антропоморфные стелы над захоронениями воинов. Изображают павших в бою с сосудом в руке." },
+    { id:47, code:"СК-07", name:"Золотые серьги Зимовниковского клада",         period:"IV в. до н.э.",      loc:"ЗКО",              img:"https://i.pinimg.com/1200x/05/9b/b4/059bb4cd5149a2d858c078a4c0225462.jpg", desc:"Серьги с зернью и сканью. Демонстрируют контакты сакской аристократии с греческими ювелирами Причерноморья." },
+    { id:48, code:"СК-08", name:"Бронзовый зеркальный диск с оленями",         period:"V в. до н.э.",       loc:"Жамбылская обл.",  img:"https://avatars.mds.yandex.net/i?id=c925704220cb279e9bd9dc5eb48045872d66d18c-9705905-images-thumbs&n=13", desc:"Бронзовое зеркало с ручкой в форме стоящего оленя. Сакское ремесло Присырдарьинских районов." },
+    { id:49, code:"СК-09", name:"Роговые псалии с зооморфными навершиями",      period:"VII в. до н.э.",     loc:"Карагандинская обл.",img:"https://avatars.mds.yandex.net/i?id=8476867330e729e36b20ed0ac854bc4a238009fd-3694967-images-thumbs&n=13",desc:"Роговые псалии в форме протомы хищника. Свидетельствуют об исключительном мастерстве косторезов саков." },
+    { id:50, code:"СК-10", name:"Золотая гривна кургана Шиликты",               period:"VIII в. до н.э.",    loc:"ВКО",              img:"https://avatars.mds.yandex.net/i?id=9f44321a5abad29b659ba557f4406232-5390929-images-thumbs&n=13", desc:"Массивная торквес из витой золотой проволоки. Шиликтинская культура — ранний этап сакского «звериного стиля»." },
+    { id:51, code:"СК-11", name:"Сакский лук (реконструкция)",                  period:"VI в. до н.э.",      loc:"Семиречье",        img:"https://museum.satbayev.university/upload/base/2023/12/7456e64c1.jpg", desc:"Рефлекторный составной лук из дерева, кости и сухожилий. Оружие, прославившее саков у персов." },
+    { id:52, code:"СК-12", name:"Бронзовые наконечники стрел саков",            period:"VI–IV вв. до н.э.",  loc:"Алматинская обл.", img:"https://avatars.mds.yandex.net/i?id=948f14e50b97e9214e9a9df4a604d506c2dae59b-3910716-images-thumbs&n=13", desc:"Трёхлопастные втульчатые наконечники. Применялись в конной стрельбе. Найдены в сакских курганах." },
+    { id:53, code:"СК-13", name:"Войлочное покрывало из кургана (фрагмент)",    period:"IV в. до н.э.",      loc:"ВКО",              img:"https://i.pinimg.com/originals/0f/9f/06/0f9f064c9d59c735de39b1bdc4276eaf.jpg", desc:"Аппликативный войлок с изображением борьбы грифона с оленем. Уникальная находка органики в условиях мерзлоты." },
+    { id:54, code:"СК-14", name:"Золотые нагрудные украшения кургана Аральтобе",period:"V в. до н.э.",       loc:"Атырауская обл.",  img:"https://avatars.mds.yandex.net/i?id=62edd25696acfbd7c5be376400ba4efaf0b4830b-12858695-images-thumbs&n=13", desc:"Нагрудные подвески в виде фигур хищных птиц. Западносакская традиция Приаралья." },
+    { id:55, code:"СК-15", name:"Каменный алтарь кургана Бесшатыр",             period:"V в. до н.э.",       loc:"Алматинская обл.", img:"https://sputnik.kz/img/351/21/3512163_0:0:1200:689_600x0_80_0_1_2b6f7533e71276c970c1feafd37148c7.jpg", desc:"Жертвенный алтарь из известняковых плит. Окружён остатками ритуального пира на 1000 человек." },
+    { id:56, code:"СК-16", name:"Железный меч с золотой рукоятью (Жалаулы)",   period:"IV в. до н.э.",      loc:"Акмолинская обл.", img:"https://feygas.ru/wa-data/public/shop/products/83/99/79983/images/85123/85123.750x0.jpg", desc:"Парадный акинак с рукоятью, инкрустированной золотыми пластинами. Принадлежал знатному воину." },
+    { id:57, code:"СК-17", name:"Терракотовые фигурки богини (сакские)",        period:"V в. до н.э.",       loc:"Туркестанская обл.",img:"https://avatars.mds.yandex.net/i?id=399d2d6261eed15487b41d079f123790_l-5235144-images-thumbs&n=13",desc:"Статуэтки богини-матери из обожжённой глины. Связаны с культом Великой Богини саков Присырдарьи." },
+    { id:58, code:"СК-18", name:"Бронзовый шлем сакского воина",                period:"VI в. до н.э.",      loc:"Алматинская обл.", img:"https://avatars.mds.yandex.net/i?id=78133cb37ee5e8a818eb0263913fa241d7759a99-9709143-images-thumbs&n=13", desc:"Полусферический шлем с нащёчниками. Конструкция аналогична ассирийским прообразам, адаптированным для степной войны." },
+    { id:59, code:"СК-19", name:"Золотые бляшки «летящие олени» Шиликты",      period:"VIII в. до н.э.",    loc:"ВКО",              img:"https://avatars.mds.yandex.net/i?id=224b1e4b3114b333936ecb764b6c097ace451b50-10251735-images-thumbs&n=13", desc:"Ранние образцы «звериного стиля» в технике штамповки. Изображения оленей с подогнутыми ногами." },
+    { id:60, code:"СК-20", name:"Конская маска с золотыми бляшками (Иссык)",   period:"IV в. до н.э.",      loc:"Алматинская обл.", img:"https://avatars.mds.yandex.net/i?id=7ee302a052e31d9a1c8bc5cd5b8333a8dd1caa01-4236172-images-thumbs&n=13", desc:"Парадное убранство коня из погребения «Золотого человека». Рога и гребень, имитирующие крылатого коня." },
+        ],
+        hunnu: [
+            { id:61, code:"ХТ-01", name:"Бронзовый котёл хунну",                  period:"II в. до н.э.",    loc:"Карагандинская обл.", img:"https://i.pinimg.com/1200x/31/12/fd/3112fda84e047288b34e0e7c067d4b42.jpg", desc:"Сферический котёл на коническом поддоне. Ритуальная и хозяйственная утварь хунну Центрального Казахстана." },
+    { id:62, code:"ХТ-02", name:"Нефритовые украшения тюрков (пряжка)",   period:"VI в. н.э.",       loc:"Алматинская обл.",   img:"https://i.pinimg.com/736x/98/15/9e/98159e2bb351792dd587c0b39ca62b38.jpg", desc:"Поясная пряжка из нефрита с зооморфным мотивом. Тюркский каганат — мода на нефритовые украшения из Средней Азии." },
+    { id:63, code:"ХТ-03", name:"Каменная тюркская баба (балбал)",        period:"VII в. н.э.",      loc:"ВКО",                 img:"https://avatars.mds.yandex.net/i?id=7b051ee36c36242cd4f962c5b643861d8a919991-6972294-images-thumbs&n=13", desc:"Антропоморфная стела с изображением воина с чашей. Поминальное сооружение тюркской эпохи." },
+    { id:64, code:"ХТ-04", name:"Золотая серьга с гранатом (Тюргеши)",    period:"VIII в. н.э.",     loc:"Семиречье",           img:"https://i.pinimg.com/736x/c7/e4/e9/c7e4e95a30583571634cd7effcb12766.jpg", desc:"Калачевидная серьга с инкрустацией альмандином. Ювелирное искусство тюргешского каганата Семиречья." },
+    { id:65, code:"ХТ-05", name:"Наскальная надпись рунами (Орхон)",      period:"VIII в. н.э.",     loc:"ВКО",                 img:"https://i.pinimg.com/736x/3c/dd/89/3cdd89978e3bf99d672afb0403a23a80.jpg", desc:"Фрагмент орхонского текста на камне. Тюркская руническая письменность — первая письменность народов Казахстана." },
+    { id:66, code:"ХТ-06", name:"Бронзовый пояс хунну с пряжками",       period:"I в. н.э.",        loc:"СКО",                 img:"https://avatars.mds.yandex.net/i?id=8f9ee60d5e02c5dc89aeb036d91b4084_l-8210344-images-thumbs&n=13", desc:"Наборный пояс с литыми бронзовыми бляхами в «зверином стиле». Маркер социального статуса в обществе хунну." },
+    { id:67, code:"ХТ-07", name:"Деревянное стремя (реконструкция)",      period:"IV в. н.э.",       loc:"ВКО",                 img:"https://avatars.mds.yandex.net/i?id=fe2c10be4f095a7f3b15c6f894b86951_l-5288062-images-thumbs&n=13", desc:"Одно из древнейших стремян Евразии. Изобретение, изменившее тактику конного боя и военную историю мира." },
+    { id:68, code:"ХТ-08", name:"Серебряный кубок согдийской работы",     period:"VII в. н.э.",      loc:"Туркестанская обл.",  img:"https://avatars.mds.yandex.net/i?id=fbc7725d21fb60a4b1d8594b0bc2594ef91763e5-4305079-images-thumbs&n=13", desc:"Серебряный кубок с чеканными сценами охоты. Согдийские мастера обслуживали тюркскую аристократию Шёлкового пути." },
+    { id:69, code:"ХТ-09", name:"Сабля раннетюркская (железо)",           period:"VI в. н.э.",       loc:"Алматинская обл.",   img:"https://i.pinimg.com/originals/81/96/16/8196163791bd6075bb598a18eaad0e61.jpg", desc:"Однолезвийный изогнутый клинок с кольцевым навершием. Прообраз классической сабли евразийских кочевников." },
+    { id:70, code:"ХТ-10", name:"Монеты тюргешского каганата",             period:"VIII в. н.э.",    loc:"Семиречье",           img:"https://avatars.mds.yandex.net/i?id=b60ca8a6b5f872e89ff45de6fac612f2afe5d401-12941940-images-thumbs&n=13", desc:"Бронзовые монеты с согдийскими надписями. Тюргешская эмиссия — редкий пример кочевнического монетного чекана." },
+    { id:71, code:"ХТ-11", name:"Деревянные погребальные маски (хунну)",  period:"I в. до н.э.",     loc:"ВКО",                 img:"https://avatars.mds.yandex.net/i?id=292f11f76b1d767fe6c9239e26bf391a34ceafceed555652-13013729-images-thumbs&n=13", desc:"Маски из берёзовой коры с прорезями для глаз. Закрывали лицо умершего в ходе погребального ритуала." },
+    { id:72, code:"ХТ-12", name:"Бронзовые бляхи с драконами (хунну)",   period:"II–I вв. до н.э.", loc:"Костанайская обл.",  img:"https://avatars.mds.yandex.net/i?id=6d7e901ef121b87efa78a44fcbb2a9e2_l-5270387-images-thumbs&ref=rim&n=13&w=1843&h=1001", desc:"Поясные бляхи с изображением борьбы дракона и тигра. Отражают мифологические связи с Китаем эпохи Хань." },
+    { id:73, code:"ХТ-13", name:"Костяные накладки на лук",               period:"III в. н.э.",      loc:"Павлодарская обл.",   img:"https://avatars.mds.yandex.net/i?id=7a2dbeebe043a46558aa26ac2e66d445_l-5227258-images-thumbs&n=13", desc:"Роговые накладки сложносоставного лука кочевников. Обеспечивали упругость плечей лука в степном климате." },
+    { id:74, code:"ХТ-14", name:"Золотая диадема из кургана Орлат",       period:"I в. н.э.",        loc:"ЮКО",                 img:"https://i.pinimg.com/736x/1f/0b/34/1f0b344fa4761f57d8ec577bf01c391c.jpg", desc:"Диадема с зооморфным орнаментом. Кангюйское искусство Присырдарьинских владений." },
+    { id:75, code:"ХТ-15", name:"Кирпич с тамгой из Баласагуна",          period:"X в. н.э.",        loc:"Жамбылская обл.",    img:"https://avatars.mds.yandex.net/i?id=727e1199fcd9733b46695da5eb9b68183d118889-10640163-images-thumbs&n=13", desc:"Жжёный кирпич с оттиском тамги правящего рода. Баласагун — столица Западно-тюркского каганата." },
+    { id:76, code:"ХТ-16", name:"Погребальная колесница кочевников",      period:"V в. н.э.",        loc:"Жамбылская обл.",    img:"https://i.pinimg.com/1200x/55/41/bc/5541bcc506173161c9900029bd481ab0.jpg", desc:"Остатки четырёхколёсной погребальной повозки. Традиция захоронения на колеснице сохранялась до средневековья." },
+    { id:77, code:"ХТ-17", name:"Бронзовое зеркало с TLV-орнаментом",    period:"I в. н.э.",        loc:"ЮКО",                 img:"https://avatars.mds.yandex.net/i?id=5493a08758909c1715a115989dc41cc40ba84132-11920434-images-thumbs&n=13", desc:"Зеркало с китайским космологическим орнаментом. Импорт из ханьского Китая через Шёлковый путь." },
+    { id:78, code:"ХТ-18", name:"Каменный оссуарий (Согд-Казахстан)",    period:"VI–VII вв. н.э.",  loc:"Туркестанская обл.",  img:"https://avatars.mds.yandex.net/i?id=4818d70815094a85ad3718e5593d4fd4_l-5237855-images-thumbs&n=13", desc:"Терракотовый ящик для хранения очищенных костей. Зороастрийский погребальный ритуал согдийских общин на Сырдарье." },
+    { id:79, code:"ХТ-19", name:"Серебряный ритон (рог для питья)",       period:"V в. н.э.",        loc:"Алматинская обл.",   img:"https://avatars.mds.yandex.net/i?id=d4b56dfad30725cbb31ab8526400d0cc855a31e0-5206345-images-thumbs&n=13", desc:"Серебряный ритон с протомой барана. Восходит к эллинистической традиции через кушанско-согдийское посредничество." },
+    { id:80, code:"ХТ-20", name:"Костяные игральные кости (асыки)",       period:"IV–VI вв. н.э.",   loc:"Павлодарская обл.",   img:"https://avatars.mds.yandex.net/i?id=5323f6da041c56b5bb617af63d9475ae_l-12544737-images-thumbs&n=13", desc:"Набор бараньих астрагалов — прообраз знаменитой казахской игры «асык». Зафиксированы в кочевнических погребениях." },
+        ],
+        medieval: [
+            { id:81,  code:"СВ-01", name:"Мавзолей Айша-Биби (архитектурные фрагменты)",period:"XII в.",       loc:"Жамбылская обл.",    img:"https://avatars.mds.yandex.net/i?id=ac3abd467c9ab13c9108640b5b9cc2272875fc62-10878007-images-thumbs&n=13", desc:"Резные терракотовые панели с геометрическим и растительным орнаментом. Уникальный памятник архитектуры Казахстана." },
+    { id:82,  code:"СВ-02", name:"Бронзовый светильник из Отрара",               period:"XII в.",       loc:"Туркестанская обл.", img:"https://frankfurt2.apollo.olxcdn.com/v1/files/8w3occga4rib-KZ/image", desc:"Фигурный светильник в форме птицы из бронзы. Отрар (Фараб) — крупнейший город средневекового Казахстана." },
+    { id:83,  code:"СВ-03", name:"Глазурованная керамика Отрара",                period:"XII–XIII вв.", loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=a65af37f1cc449f903b14c055c7290fa_l-5221733-images-thumbs&n=13", desc:"Чаши и кувшины с бирюзовой и кобальтовой глазурью. Отрарская школа керамики была одной из лучших в исламском мире." },
+    { id:84,  code:"СВ-04", name:"Монеты Золотой Орды (казахстанские находки)",  period:"XIII–XIV вв.", loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=4914c6eb807943181592c31ca416c78d803d73e2-9847423-images-thumbs&n=13", desc:"Серебряные дирхемы с арабскими надписями. Золотоордынская нумизматика из городищ Сырдарьинского региона." },
+    { id:85,  code:"СВ-05", name:"Мечеть Карахана — михраб (фрагмент)",          period:"XI в.",        loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=213a47ff33314b0afcfba53cab37cbee07c69380-4885194-images-thumbs&n=13", desc:"Алебастровый михраб с арабскими каллиграфическими надписями. Ранняя исламская архитектура Казахстана." },
+    { id:86,  code:"СВ-06", name:"Рукопись «Диван Лугат ат-Тюрк» (копия)",       period:"1073–1074",    loc:"Туркестан",          img:"https://avatars.mds.yandex.net/i?id=833545630365bf6741f0b1904597e67020e28d72-10695933-images-thumbs&n=13", desc:"«Словарь тюркских наречий» Махмуда Кашгари. Важнейший лингвистический памятник тюркского средневековья." },
+    { id:87,  code:"СВ-07", name:"Надгробная плита с куфической надписью",       period:"X–XI вв.",     loc:"ЮКО",                img:"https://avatars.mds.yandex.net/i?id=d2f58c8bcb894074c0cad78229c8389051d605df-4571053-images-thumbs&n=13", desc:"Мраморная эпитафия с арабской надписью. Свидетельствует о раннем распространении ислама среди горожан Казахстана." },
+    { id:88,  code:"СВ-08", name:"Стеклянные изделия из Сыгнака",                period:"XII–XIV вв.",  loc:"Кызылординская обл.",img:"https://avatars.mds.yandex.net/i?id=28df5a72b8c04710ab0b501b6e057669-5150959-images-thumbs&n=13", desc:"Флаконы и чаши выдувного стекла. Сыгнак — важный торговый центр на пересечении степных и оседлых путей." },
+    { id:89,  code:"СВ-09", name:"Монгольский доспех (чешуйчатый)",              period:"XIII в.",      loc:"ЗКО",                img:"https://avatars.mds.yandex.net/i?id=89f15cfc282056709c719099ca19ec99118d84c4-5869063-images-thumbs&n=13", desc:"Ламеллярный доспех из железных пластин. Период монгольского завоевания и включения степей в состав улуса Джучи." },
+    { id:90,  code:"СВ-10", name:"Серебряный поднос с арабской вязью (Отрар)",   period:"XII в.",       loc:"Туркестанская обл.", img:"https://i.pinimg.com/1200x/2d/66/82/2d66826d8fc511f1219170c0b32a5f0e.jpg", desc:"Парадный поднос с гравированным орнаментом и благопожелательными надписями. Свидетельство высокого ремесла городов." },
+    { id:91,  code:"СВ-11", name:"Терракотовая фигурка воина-кавалериста",       period:"XI–XII вв.",   loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=951d97b6e1181fd821481eb84a9277d2fc3921e6-5130643-images-thumbs&n=13", desc:"Статуэтка конного воина с колчаном и луком. Массовое производство — детская игрушка или ритуальный предмет." },
+    { id:92,  code:"СВ-12", name:"Кирпич с тамгой кыпчакских ханов",             period:"XI–XII вв.",   loc:"Костанайская обл.",  img:"https://avatars.mds.yandex.net/i?id=d49bb386e87dc518481d33cba14406415f9c0c52bcb90b61-12738621-images-thumbs&n=13", desc:"Строительный кирпич с оттиском правящей тамги. Кыпчакское ханство — предшественник Казахского ханства." },
+    { id:93,  code:"СВ-13", name:"Костяная рукоять сабли с орнаментом",          period:"X–XII вв.",    loc:"ВКО",                img:"https://avatars.mds.yandex.net/i?id=0bd9f1664608536b42f6c14ec28a5c4c8337336f-8978567-images-thumbs&n=13", desc:"Рукоять из трубчатой кости с плетёным орнаментом. Средневековое оружейное ремесло степных городов." },
+    { id:94,  code:"СВ-14", name:"Ганч-панель мечети (гипсовая резьба)",         period:"XI в.",        loc:"Жамбылская обл.",    img:"https://avatars.mds.yandex.net/i?id=6587f72fe858153efeec9259813af50f-3700445-images-thumbs&ref=rim&n=33&w=250&h=250", desc:"Резная ганчевая панель с арабесками. Традиция центральноазиатского декора в городах Казахстана." },
+    { id:95,  code:"СВ-15", name:"Бронзовый замок из Тараза",                    period:"X–XI вв.",     loc:"Жамбылская обл.",    img:"https://avatars.mds.yandex.net/i?id=75cdf2e73e533c9b7891c12c2665edba0b258c83-9152878-images-thumbs&n=13", desc:"Фигурный замок в форме животного. Художественное ремесло средневекового Тараза на Шёлковом пути." },
+    { id:96,  code:"СВ-16", name:"Деревянная колонна мечети (фрагмент)",         period:"XII в.",       loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=85201e324735303ab58fd3576ea2d152ba9136d7-10805295-images-thumbs&n=13", desc:"Резная деревянная колонна с растительным орнаментом. Архитектурные элементы деревянного зодчества Присырдарьи." },
+    { id:97,  code:"СВ-17", name:"Монеты Хорезмшахов (казахстанские находки)",   period:"XII–XIII вв.", loc:"ЮКО",                img:"https://avatars.mds.yandex.net/i?id=ecbcb6568943a96698944d8b4ebc47bd74a7751c-10806896-images-thumbs&n=13", desc:"Серебряные дирхемы Мухаммада II Хорезмшаха. Казахстан входил в зону хорезмийского влияния до монгольского нашествия." },
+    { id:98,  code:"СВ-18", name:"Поливная чаша Сауран",                         period:"XI в.",        loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=695bd600851deb09012e33af78a991315a759fb9-12817767-images-thumbs&n=13", desc:"Чаша с эпиграфическим орнаментом и арабскими благопожеланиями. Сауран — укреплённый город на пути в Туркестан." },
+    { id:99,  code:"СВ-19", name:"Бронзовые весы и гири (Отрар)",                period:"XII–XIII вв.", loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=297e1e544f3e6d437bfae88459023e2f90f33b2d-4525867-images-thumbs&n=13", desc:"Торговые весы и стеклянные гири. Торговый инвентарь купца на Шёлковом пути из Отрара." },
+    { id:100, code:"СВ-20", name:"Осада Отрара войсками Чингисхана (1219)",      period:"1219",         loc:"Туркестанская обл.", img:"https://avatars.mds.yandex.net/i?id=1a545181d90a66485a0630643e74d2a4_l-7096437-images-thumbs&n=13", desc:"Гарнизон Отрара под командованием Каир-хана полгода держал оборону против монгольской армии. Героическая страница истории Казахстана." },
+        ],
+        kazakh: [
+            { id:101, code:"КХ-01", name:"Тюбетейка казахского хана (XVIII в.)",    period:"XVIII в.",       loc:"Центральный Казахстан",img:"https://avatars.mds.yandex.net/i?id=b4fc89feaa50fc6e0ff9b6ee4b8e50e59d643eb7-10414807-images-thumbs&n=13", desc:"Вышитая бархатная тюбетейка с золотным шитьём. Атрибут ханской власти в период Казахского ханства." },
+    { id:102, code:"КХ-02", name:"Юрта казахская (разборная конструкция)",  period:"XIX в.",         loc:"Карагандинская обл.",  img:"https://i.pinimg.com/736x/cb/18/f6/cb18f6716e3736a715c80ec185281359.jpg", desc:"Традиционное жилище казахов. Деревянный каркас и войлочное покрытие. Разбирается и собирается за несколько часов." },
+    { id:103, code:"КХ-03", name:"Домбра XVIII века",                       period:"XVIII в.",       loc:"ЮКО",                  img:"https://avatars.mds.yandex.net/i?id=0340530fe5e41a4006ce86edd86c85dbc45de532-5442367-images-thumbs&n=13", desc:"Двухструнный щипковый инструмент. Инструмент казахских жырау и акынов — носителей эпической традиции." },
+    { id:104, code:"КХ-04", name:"Ханский ярлык (грамота) на пергаменте",   period:"XVI в.",         loc:"Туркестан",             img:"https://avatars.mds.yandex.net/i?id=e42cea41c6b3fc8fda246ef28d01301a122f77fd-16293445-images-thumbs&n=13", desc:"Официальный документ казахского хана. Написан на чагатайском языке. Регулировал земельные и политические отношения." },
+    { id:105, code:"КХ-05", name:"Казахская сабля с ножнами (XIX в.)",      period:"XIX в.",         loc:"СКО",                  img:"https://avatars.mds.yandex.net/i?id=17ee049fe0b2ec9ab87c6cb8bb55aedee8b86aa9-4760093-images-thumbs&n=13", desc:"Клинок с гравировкой и серебряными ножнами. Оружие казахского батыра. Сохранилась в роду потомков Кенесары." },
+    { id:106, code:"КХ-06", name:"Войлочный ковёр «сырмак» (XIX в.)",      period:"XIX в.",         loc:"ЗКО",                  img:"https://i.pinimg.com/736x/05/a1/fe/05a1fe50d900a023d13d099f1c5e3cd4.jpg", desc:"Войлочный ковёр с аппликацией в традиционных казахских узорах. Мастерство женщин — жена батыра Срыма Датулы." },
+    { id:107, code:"КХ-07", name:"Серебряное украшение «шашбау»",          period:"XVIII–XIX вв.",  loc:"ЮКО",                  img:"https://avatars.mds.yandex.net/i?id=8c914b7b578c7747c399a3e7a7f6a562ad4e5571-5226476-images-thumbs&n=13", desc:"Женское нагрудно-накосное украшение из серебра с бирюзой. Традиционный казахский ювелирный промысел зергеров." },
+    { id:108, code:"КХ-08", name:"Деревянная резная колыбель (бесік)",      period:"XIX в.",         loc:"Карагандинская обл.",  img:"https://i.pinimg.com/736x/9b/5e/8e/9b5e8e8eb67de2d7fdabf1915db63e0d.jpg", desc:"Деревянная колыбель с резным орнаментом. Обряд «бесікке салу» — первый обряд казахского ребёнка." },
+    { id:109, code:"КХ-09", name:"Охотничий беркут (чучело)",               period:"XIX в.",         loc:"Алматинская обл.",     img:"https://avatars.mds.yandex.net/i?id=70dcf44ec9c88b9df6e2c9c485a42ea8_l-9224539-images-thumbs&n=13", desc:"Соколиная охота с беркутами — «беркутчи». Искусство внесено в список нематериального наследия ЮНЕСКО в 2016 году." },
+    { id:110, code:"КХ-10", name:"Казахские тоғыз-құмалақ (набор)",        period:"XIX в.",         loc:"ЮКО",                  img:"https://avatars.mds.yandex.net/i?id=e96273b653fd7d4ae7dbab1582809580_l-5238116-images-thumbs&n=13", desc:"Традиционная игра с 162 шарами на деревянной доске. Развивает стратегическое мышление и математические способности." },
+    { id:111, code:"КХ-11", name:"Рукопись «Жеті Жарғы» (список XIX в.)",  period:"XVII в.",        loc:"Туркестан",             img:"https://avatars.mds.yandex.net/i?id=83026f2e8c10bd75e05e5e169df8deedcbaa2530-4866825-images-thumbs&n=13", desc:"Свод законов казахских ханов Тәуке хана. «Семь уложений» — правовая основа Казахского ханства XVII века." },
+    { id:112, code:"КХ-12", name:"Серебряный нагрудник «Өңіржиек»",        period:"XVIII в.",       loc:"ЦКО",                  img:"https://avatars.mds.yandex.net/i?id=2ecc136bb5cd269f49852637aeeb6b67_l-5133450-images-thumbs&n=13", desc:"Массивное нагрудное украшение невесты с кораллами и бирюзой. Передавалось как приданое из поколения в поколение." },
+    { id:113, code:"КХ-13", name:"Кожаный колчан с бронзовыми накладками", period:"XVII–XVIII вв.", loc:"ВКО",                  img:"https://гранд-презент.рф/d/full_shamp-bogatir-10_kopiya.jpg  ", desc:"Берестяной колчан на 20–25 стрел с кожаным покрытием. Оружейный комплекс казахского воина-батыра." },
+    { id:114, code:"КХ-14", name:"Национальный войлочный костюм (тон)",    period:"XIX в.",         loc:"Акмолинская обл.",     img:"https://i.pinimg.com/736x/dc/ef/f6/dceff6ab8ab0dbc3e5391dcd88c8dffe.jpg", desc:"Парадный войлочный халат с вышивкой шёлком. Надевался на праздники и торжественные церемонии." },
+    { id:115, code:"КХ-15", name:"Деревянный расписной сундук (XIX в.)",   period:"XIX в.",         loc:"ЗКО",                  img:"https://i.pinimg.com/736x/01/1d/be/011dbef3f7a34ae042da344f36e77d31.jpg", desc:"Приданое казахской невесты. Хранил одежду, украшения и ценные предметы. Роспись растительным орнаментом." },
+    { id:116, code:"КХ-16", name:"Медная посуда «тостаған»",               period:"XVIII–XIX вв.",  loc:"ЮКО",                  img:"https://i.pinimg.com/736x/c2/2a/7c/c22a7c940a7acae0f6a2d2a6d3b3f006.jpg", desc:"Парадная медная чаша для кумыса. Вручалась почётному гостю. Гравирована именем мастера и именем владельца." },
+    { id:117, code:"КХ-17", name:"Кобыз (смычковый инструмент)",           period:"XIX в.",         loc:"Туркестан",             img:"https://i.pinimg.com/1200x/92/0b/bf/920bbf9e3a97d45656663837e087bbc7.jpg", desc:"Архаичный смычковый инструмент казахских баксы — шаманов. Звук кобыза считался способным изгонять злых духов." },
+    { id:118, code:"КХ-18", name:"Письмо Абая Кунанбаева (факсимиле)",     period:"1898",           loc:"ВКО",                  img:"https://avatars.mds.yandex.net/i?id=e18a8c0701acb0cc185c92dafd82cb5298851e76-16453054-images-thumbs&n=13", desc:"Рукописное письмо великого казахского поэта-просветителя. «Слова назидания» — главный философский труд Абая." },
+    { id:119, code:"КХ-19", name:"Военный штандарт казахского войска",     period:"XVIII в.",       loc:"ЦКО",                  img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Flag_of_Armed_Forces_of_the_Republic_of_Kazakhstan.svg/1280px-Flag_of_Armed_Forces_of_the_Republic_of_Kazakhstan.svg.png", desc:"Бунчук — конский хвост на древке. Символ военного командования батыров в период Джунгарского нашествия." },
+    { id:120, code:"КХ-20", name:"Карта Казахского ханства (копия, XVIII в.)",period:"1750",        loc:"Туркестан",             img:"https://avatars.mds.yandex.net/i?id=b8c6a6aa1e9e9d2c53401a367ae4ed467fe235bb-5130643-images-thumbs&n=13", desc:"Российская картография казахских степей эпохи. Отображает три жуза и их кочевые маршруты в XVIII веке." },
+        ]
+    };
+    // добавим недостающие массивы для полноты (чтобы count работал корректно)
+    if (!exhibits['saka']) exhibits.saka = [];
+    if (!exhibits['hunnu']) exhibits.hunnu = [];
+    if (!exhibits['medieval']) exhibits.medieval = [];
+    if (!exhibits['kazakh']) exhibits.kazakh = [];
+
+    // гарантия, что для каждого id есть массив (но выше уже есть)
+    sections.forEach(sec => { if(!exhibits[sec.id]) exhibits[sec.id] = []; });
+
+    // ------------------------------------------------------------------
+    // 2. СОСТОЯНИЕ И РЕНДЕР
+    // ------------------------------------------------------------------
+    let currentState = {
+        screen: "home",       // "home", "list", "detail"
+        activeSectionId: null,
+        activeExhibit: null,
+    };
+
+    function getCurrentSection() {
+        if (!currentState.activeSectionId) return null;
+        return sections.find(s => s.id === currentState.activeSectionId);
+    }
+
+    // обработчики переходов
+    function goHome() {
+        currentState = { screen: "home", activeSectionId: null, activeExhibit: null };
+        render();
+    }
+
+    function goList(sectionId) {
+        currentState = { screen: "list", activeSectionId: sectionId, activeExhibit: null };
+        render();
+    }
+
+    function goDetail(exhibit) {
+        currentState = { ...currentState, screen: "detail", activeExhibit: exhibit };
+        render();
+    }
+
+    function goBack() {
+        if (currentState.screen === "detail") {
+            // вернуться к списку (сохраняем activeSectionId)
+            currentState = { ...currentState, screen: "list", activeExhibit: null };
+        } else if (currentState.screen === "list") {
+            goHome();
+        } else {
+            goHome();
+        }
+        render();
+    }
+
+    // утилита для fallback изображений
+    function handleImageError(e) {
+        e.target.src = PH;
+    }
+
+    // ------------------------------------------------------------------
+    // компоненты рендера (чистый DOM)
+    // ------------------------------------------------------------------
+    function renderHome() {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'page-content';
+
+        const intro = document.createElement('p');
+        intro.className = 'intro-text';
+        intro.innerText = 'Выберите исторический период';
+        pageDiv.appendChild(intro);
+
+        sections.forEach(sec => {
+            const btn = document.createElement('button');
+            btn.className = 'section-row';
+            const count = exhibits[sec.id] ? exhibits[sec.id].length : 0;
+
+            btn.innerHTML = `
+                <div class="section-icon">${sec.icon}</div>
+                <div class="section-info">
+                    <div class="section-label">${sec.label}</div>
+                    <div class="section-range">${sec.range}</div>
+                    <div class="section-count">${count} экспонатов</div>
+                </div>
+                <span class="chevron">›</span>
+            `;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goList(sec.id);
+            });
+            pageDiv.appendChild(btn);
+        });
+        return pageDiv;
+    }
+
+    function renderList() {
+        const sectionId = currentState.activeSectionId;
+        if (!sectionId) return renderHome();
+
+        const list = exhibits[sectionId] || [];
+        const secObj = sections.find(s => s.id === sectionId);
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'page-content';
+
+        list.forEach(ex => {
+            const row = document.createElement('button');
+            row.className = 'exhibit-row';
+            row.innerHTML = `
+                <img class="exhibit-img" src="${ex.img}" alt="${ex.name}" loading="lazy">
+                <div class="exhibit-info">
+                    <div class="exhibit-code">${ex.code}</div>
+                    <div class="exhibit-name">${ex.name}</div>
+                    <div class="exhibit-meta">${ex.period} · ${ex.loc}</div>
+                </div>
+                <span class="chevron">›</span>
+            `;
+            const imgEl = row.querySelector('img');
+            if (imgEl) imgEl.addEventListener('error', handleImageError);
+            row.addEventListener('click', () => goDetail(ex));
+            pageDiv.appendChild(row);
+        });
+
+        if (list.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.style.cssText = "background:#fff; border-radius:12px; padding:28px; text-align:center; color:#6B6560;";
+            emptyMsg.innerText = "В этом разделе пока нет экспонатов, но коллекция пополняется.";
+            pageDiv.appendChild(emptyMsg);
+        }
+        return pageDiv;
+    }
+
+    function renderDetail() {
+        const ex = currentState.activeExhibit;
+        if (!ex) return renderHome();
+
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'page-content';
+
+        const card = document.createElement('div');
+        card.className = 'detail-card';
+
+        card.innerHTML = `
+            <div class="detail-top">
+                <img class="detail-img" src="${ex.img}" alt="${ex.name}">
+                <div class="detail-meta">
+                    <div class="detail-code">${ex.code}</div>
+                    <div class="detail-name">${ex.name}</div>
+                    <div class="detail-period">${ex.period}</div>
+                    <div class="detail-location">📍 ${ex.loc}</div>
+                </div>
+            </div>
+            <div class="detail-divider"></div>
+            <p class="detail-desc">${ex.desc}</p>
+        `;
+        const imgInCard = card.querySelector('.detail-img');
+        if (imgInCard) imgInCard.addEventListener('error', handleImageError);
+
+        const linkBtn = document.createElement('a');
+        linkBtn.href = `https://www.google.com/search?q=${encodeURIComponent(ex.name + " Казахстан музей")}`;
+        linkBtn.target = "_blank";
+        linkBtn.rel = "noopener noreferrer";
+        linkBtn.className = "learn-more";
+        linkBtn.innerText = "Узнать больше →";
+        card.appendChild(linkBtn);
+
+        pageDiv.appendChild(card);
+        return pageDiv;
+    }
+
+    function updateHeader() {
+        const headerDiv = document.querySelector('.museum-header');
+        if (!headerDiv) return;
+
+        const sec = getCurrentSection();
+        let title = "";
+        let subtitle = "";
+
+        if (currentState.screen === "home") {
+            title = "МУЗЕЙ КАЗАХСТАНА";
+            subtitle = "Историческое наследие";
+        } else if (currentState.screen === "list" && sec) {
+            title = sec.label;
+            subtitle = sec.range;
+        } else if (currentState.screen === "detail" && currentState.activeExhibit) {
+            title = currentState.activeExhibit.name;
+            subtitle = `${currentState.activeExhibit.code} · ${currentState.activeExhibit.period}`;
+        } else {
+            title = "МУЗЕЙ КАЗАХСТАНА";
+            subtitle = "";
+        }
+
+        const titleSpan = headerDiv.querySelector('.header-title');
+        const subSpan = headerDiv.querySelector('.header-sub');
+        if (titleSpan) titleSpan.innerText = title;
+        if (subSpan) subSpan.innerText = subtitle;
+
+        // управление кнопкой назад
+        const backBtn = headerDiv.querySelector('.back-button');
+        if (backBtn) {
+            if (currentState.screen === "home") {
+                backBtn.style.visibility = "hidden";
+                backBtn.style.opacity = "0";
+                backBtn.style.pointerEvents = "none";
+            } else {
+                backBtn.style.visibility = "visible";
+                backBtn.style.opacity = "1";
+                backBtn.style.pointerEvents = "auto";
+            }
+        }
+    }
+
+    function render() {
+        const appContainer = document.getElementById('museumApp');
+        if (!appContainer) return;
+
+        // рисуем с нуля структуру с хэдером
+        appContainer.innerHTML = `
+            <div class="museum-header">
+                <div class="header-row">
+                    <button class="back-button" aria-label="Назад">←</button>
+                    <div class="header-texts">
+                        <div class="header-title">МУЗЕЙ КАЗАХСТАНА</div>
+                        <div class="header-sub">Историческое наследие</div>
+                    </div>
+                </div>
+            </div>
+            <div id="dynamicPage"></div>
+        `;
+
+        const headerDiv = appContainer.querySelector('.museum-header');
+        const backBtn = headerDiv?.querySelector('.back-button');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                goBack();
+            });
+        }
+
+        const pageContainer = document.getElementById('dynamicPage');
+        if (!pageContainer) return;
+
+        let content = null;
+        if (currentState.screen === "home") content = renderHome();
+        else if (currentState.screen === "list") content = renderList();
+        else if (currentState.screen === "detail") content = renderDetail();
+        else content = renderHome();
+
+        if (content) pageContainer.appendChild(content);
+        updateHeader();
+    }
+
+    // Инициализация
+    render();
+</script>
+</body>
+</html>
